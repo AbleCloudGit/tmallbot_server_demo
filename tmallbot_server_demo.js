@@ -118,22 +118,19 @@ require('http').createServer((request, response) => {
                 body.header.name == "DiscoveryDevices") {
                 /** 
                  * 将请求发至uds进行业务逻辑处理
-                 * sendToService("serviceName", "serviceMethod", "subDomainId", {}, userAccessToken, (udsResp) => {
+                 * sendToService("serviceName", "serviceMethod", "subDomainId", {}, userAccessToken, (udsResp, error) => {
                  *     let respBody = {
                  *         header: Object.assign({}, body.header, {name: "DiscoveryDevicesResponse"}),
-                 *         payload: { //此部分payload需要根据uds业务逻辑处理结果返回的udsResp来拼接
+                 *         payload: { //此部分payload需要根据uds业务逻辑处理结果返回的 udsResp 来拼接
                  *         }
                  *     };
-                 *     res.end(JSON.stringify(respBody)); 
+                 *     response.end(JSON.stringify(respBody)); 
                  * });
                  */
                 let respBodyMock = { // 示例返回
                     header: Object.assign({}, body.header, {name: "DiscoveryDevicesResponse"}),
                     payload: buildMockDevicesPayload()
                 };
-                sendToDevice(5853, "4178", 68, new Buffer([0xFF, 0x01, 0xAF, 0x02]), userAccessToken, (resp, error) => {
-                        
-                })
                 response.end(JSON.stringify(respBodyMock));
             }
             // 2.协议解析示例：设备控制打开（此部分也可放至UDS处理） 
@@ -143,11 +140,16 @@ require('http').createServer((request, response) => {
                  * 直接发起控制指令
                  * sendToDevice("subDomainId", body.payload.deviceId, 68, new Buffer([0xFF, 0x01, 0xAF, 0x02]), userAccessToken, (resp, error) => {
                  *      //处理设备响应     
+                 *     let respBody = {
+                 *         header: Object.assign({}, body.header, {name: "TurnOnResponse"}),
+                 *         payload: { deviceId: body.payload.deviceId }
+                 *     };
+                 *     response.end(JSON.stringify(respBody)); 
                  * })
                  */
                 let respBodyMock = { // 示例返回
                     header: Object.assign({}, body.header, {name: "TurnOnResponse"}),
-                    payload: {deviceId: body.payload.deviceId}
+                    payload: { deviceId: body.payload.deviceId }
                 };
                 response.end(JSON.stringify(respBodyMock));
             }
